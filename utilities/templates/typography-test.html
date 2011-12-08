@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Typography Test{% endblock %}
+
+
+{% block content %}
+
+<h1>Typography Test</h1>
+
+<h1>Heading 1</h1>
+<h2>Heading 2</h2>
+<h3>Heading 3</h3>
+<h4>Heading 4</h4>
+<h5>Heading 5</h5>
+<h6>Heading 6</h6>
+<p>The order in which <strong>routers are processed</strong> is significant. <em>Routers will be queried in the order the are listed in the <a href="/">DATABASE_ROUTERS setting .</a></em> In this example, the MyAppRouter is processed before the MasterSlaveRouter, and as a result, decisions concerning the models in myapp are processed before any other decision is made. If the DATABASE_ROUTERS setting listed the two routers in the other order, MasterSlaveRouter.allow_syncdb() would be processed first. The catch-all nature of the MasterSlaveRouter implementation would mean that all models would be <a href="/">available on all databases.</a></p>
+<blockquote>
+<p>Django also provides an API that allows you to maintain complete control over database usage in your code. A manually specified database allocation will take priority over a database allocated by a router.</p>
+</blockquote>
+<ul>
+<li> Django doesn't currently provide any support for foreign key or many-to-many relationships spanning multiple databases. If you have used a router to partition models to different databases, any foreign key and many-to-many relationships defined by those models must be internal to a single database.</li>
+<li> This is because of referential integrity. In order to maintain a relationship between two objects, Django needs to know that the primary key of the related object is valid. If the primary key is stored on a separate database, it's not possible to easily evaluate the validity of a primary key. </li>
+<li> If you're using Postgres, Oracle, or MySQL with InnoDB, this is enforced at the database integrity level -- database level key constraints prevent the creation of relations that can't be validated. </li>
+<li> However, if you're using SQLite or MySQL with MyISAM tables, there is no enforced referential integrity; as a result, you may be able to 'fake' cross database foreign keys. However, this configuration is not officially supported by Django. </li>
+</ul>
+
+<div id="palette">
+    <h6>Palette</h6>
+</div>
+<style>
+    #palette h6 {
+        margin: 5px;
+    }
+    #palette div {
+        margin: 5px;
+        width: 70px;
+        height: 45px;
+        padding-top: 25px;
+        text-align: center;
+        float: left;
+        display: inline;
+        text-shadow: 0 0 5px #fff;
+        color: #000;
+    }
+</style>
+
+
+
+{% endblock %}
+
+
+
+{% block extra_js %}
+{{ block.super }}
+<script type="text/javascript">
+(function($) {
+    var STYLESHEETS = ['/static/c/style.css', '/static/c/site.css'];
+    
+    $(function() {
+        var palette = [];
+        for (var i = 0; i < STYLESHEETS.length; i++) {
+            $.get(STYLESHEETS[i], function(text) {
+                var matches = text.match(/#[A-Fa-f0-9]{3,6}|rgba?\([0-9\s,]+\)/g);
+                if (matches) {
+                    for (var k = 0; k < matches.length; k++) {
+                        var hex = matches[k].toLowerCase();
+                        if (palette.indexOf(hex) == -1) {
+                            $('#palette').append($('<div>').css('background', hex).text(hex));
+                            palette.push(hex);
+                        }
+                    }
+                }
+            });
+        }
+    
+    });
+})(jQuery);
+</script>
+{% endblock %}
