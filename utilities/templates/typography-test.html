@@ -44,8 +44,6 @@
     }
 </style>
 
-
-
 {% endblock %}
 
 
@@ -54,23 +52,29 @@
 {{ block.super }}
 <script type="text/javascript">
 (function($) {
-    var STYLESHEETS = ['/static/c/style.css', '/static/c/site.css'];
+    var STYLESHEETS = [
+        '{% firstof STATIC_URL MEDIA_URL %}c/style.css',
+        '{% firstof STATIC_URL MEDIA_URL %}c/site.css',
+        '{% firstof STATIC_URL MEDIA_URL %}c/fonts.css',
+        '{% firstof STATIC_URL MEDIA_URL %}c/form.css'
+     ];
     
     $(function() {
         var palette = [];
         for (var i = 0; i < STYLESHEETS.length; i++) {
-            $.get(STYLESHEETS[i], function(text) {
-                var matches = text.match(/#[A-Fa-f0-9]{3,6}|rgba?\([0-9\s,]+\)/g);
-                if (matches) {
-                    for (var k = 0; k < matches.length; k++) {
-                        var hex = matches[k].toLowerCase();
-                        if (palette.indexOf(hex) == -1) {
-                            $('#palette').append($('<div>').css('background', hex).text(hex));
-                            palette.push(hex);
+                $.get(STYLESHEETS[i], function(text) {
+                    var matches = text.match(/#[A-Fa-f0-9]{3,6}|rgba?\([0-9\s,]+\)/g);
+                    if (matches) {
+                        for (var k = 0; k < matches.length; k++) {
+                            var hex = matches[k].toLowerCase();
+                            if (palette.indexOf(hex) == -1) {
+                                $('#palette').append($('<div>').css('background', hex).text(hex));
+                                palette.push(hex);
+                            }
                         }
                     }
-                }
-            });
+                });
+            
         }
     
     });
