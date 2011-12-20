@@ -1,4 +1,4 @@
-import urllib2
+import urllib2, httplib
 from ftplib import FTP
 
 from django import template
@@ -27,23 +27,18 @@ class TweetNode(template.Node):
             try:
                 client = twitter.Api()
                 if self.favourite:
-
                     tweets = client.GetFavorites(username)
                     if not len(tweets):
                         tweets = client.GetUserTimeline(username)
                     for status in tweets:
                         if status.user.screen_name.lower() == username.lower():
                             return status
-
                 else:
-
                     tweets = client.GetUserTimeline(username)
-
                     if len(tweets):
-
                         return tweets[0]
 
-            except urllib2.URLError, urllib2.HttpError:
+            except (urllib2.URLError, httplib.BadStatusLine), e:
                 pass
             return None
 
