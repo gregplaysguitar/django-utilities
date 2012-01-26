@@ -1,5 +1,5 @@
 from django import template
-from util.easy_tag import easy_tag
+from utilities.easy_tag import easy_tag
 
 
 register = template.Library()
