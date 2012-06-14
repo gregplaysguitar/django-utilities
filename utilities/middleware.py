@@ -37,11 +37,18 @@ class AppendOrRemoveSlashMiddleware(object):
         Note we can't also go back the other way, because this might cause an
         infinite loop."""
         
-        if response.status_code == 404 and not request.path_info.endswith('/') and settings.APPEND_SLASH:
-            new_path = request.path_info + '/'
-            urlconf = getattr(request, 'urlconf', None)
-            if _is_valid_path(new_path, urlconf):
-                return http.HttpResponsePermanentRedirect(generate_url(request, new_path))
+        if response.status_code == 404:
+            if not request.path_info.endswith('/') and settings.APPEND_SLASH:
+                new_path = request.path_info + '/'
+            elif request.path_info.endswith('/') and not settings.APPEND_SLASH:
+                new_path = request.path_info[:-1]
+            else:
+                new_path = None
+            
+            if new_path:
+                urlconf = getattr(request, 'urlconf', None)
+                if _is_valid_path(new_path, urlconf):
+                    return http.HttpResponsePermanentRedirect(generate_url(request, new_path))
         return response
             
 
