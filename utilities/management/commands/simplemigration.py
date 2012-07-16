@@ -2,9 +2,19 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db import models
 from django.core.management import call_command
 from django.db import connection, transaction
+from django.conf import settings
 
 class Command(BaseCommand):
     def handle(self, *model_labels, **options):
+        
+        if settings.DATABASES:
+            db_engine =  settings.DATABASES[settings.DATABASES.keys()[0]]['ENGINE'].split('.')[-1]
+        else:
+            db_engine =  settings.DATABASE_ENGINE
+        
+        if db_engine != 'sqlite3' or not settings.DEBUG:
+            raise CommandError('simplemigration should only be used on sqlite databases with DEBUG = True (not for production use).')
+    
         for label in model_labels:
             m = models.get_model(*label.split('.'))
             temp_name = '_' + m._meta.db_table
