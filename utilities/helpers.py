@@ -1,8 +1,9 @@
+import re
+import itertools
+
 from django.conf import settings
 from django.core.cache import cache
-import re
 from django.template.defaultfilters import slugify
-import itertools
 
 
 class Indexable(object):    
@@ -44,7 +45,7 @@ def cached(key, duration=None):
     def decorator(func):
         def inner(*args, **kwargs):
             key_bits = [settings.CACHE_MIDDLEWARE_KEY_PREFIX, key]
-            [key_bits.append(str(val)) for val in args]
+            [key_bits.append(slugify(str(val))) for val in args]
             [key_bits.append(str(val)) for val in kwargs.iteritems()]
             full_key = '|'.join(key_bits)
             result = cache.get(full_key)
