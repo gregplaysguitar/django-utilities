@@ -15,8 +15,13 @@ class AppendGetNode(template.Node):
 
         for key in self.dict:
             if key != 'parser':
-                get[key] = template.Variable(self.dict[key]).resolve(context)
-        
+                val = template.Variable(self.dict[key]).resolve(context)
+                if val:
+                    get[key] = val
+                elif key in get:
+                    del get[key]
+                            
+
         if self.path:
             path = template.Variable(self.path).resolve(context)
         else:
