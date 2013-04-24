@@ -1,6 +1,7 @@
 import logging
 
 class RemovePasswordFilter(logging.Filter):
+    '''Remove POSTed passwords from error logs; note this is redundant in Django 1.4+'''
     def filter(self, record):
         
         if record.request.POST:
