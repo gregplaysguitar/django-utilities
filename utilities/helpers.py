@@ -1,9 +1,10 @@
 import re
 import itertools
 
-from django.conf import settings
-from django.core.cache import cache
 from django.template.defaultfilters import slugify
+
+# for backwards-compatibility
+from cache_utils import cached
 
 
 class Indexable(object):    
@@ -24,39 +25,6 @@ class Indexable(object):
             self.already_computed.extend(itertools.islice(self.it,n))
         return self.already_computed[index]   
 
-
-def cached(key, duration=None):
-    """Wraps caching around an existing function, using the given key, duration, and
-       call-time function arguments.
-    
-    Use like:
-    
-    @cached("work-for-x", 600)
-    def work(*args, **kwargs):
-        # do work here
-        return result
-    
-    result = work(*args, **kwargs) # result will come from cache if possible
-    """
-    
-    if not duration:
-        duration = settings.CACHE_MIDDLEWARE_SECONDS
-    
-    def decorator(func):
-        def inner(*args, **kwargs):
-            key_bits = [settings.CACHE_MIDDLEWARE_KEY_PREFIX, key]
-            [key_bits.append(slugify(str(val))) for val in args]
-            [key_bits.append(str(val)) for val in kwargs.iteritems()]
-            full_key = '|'.join(key_bits)
-            result = cache.get(full_key)
-            if not result:
-                result = func(*args, **kwargs)
-                cache.set(full_key, result, duration)
-            return result
-        inner.__name__ = "@cached %s" % func.__name__
-        inner.__doc__ = "@cached. %s" % func.__doc__
-        return inner
-    return decorator
 
 
 def unique_slugify(instance, value, slug_field_name='slug', queryset=None,
