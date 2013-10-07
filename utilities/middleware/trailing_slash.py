@@ -13,7 +13,9 @@ class AppendOrRemoveSlashMiddleware(object):
     Additionally, if a 404 error is raised within a view for a non-slashed url, and 
     APPEND_SLASH is True, and the slash-appended url resolves, the middleware will
     redirect. (The default APPEND_SLASH behaviour only catches Resolver404, so
-    wouldn't work in this case.)"""
+    wouldn't work in this case.)
+    
+    See gregbrown.co.nz/code/append-or-remove-slash/ for more information."""
 
     def process_request(self, request):
         """Returns a redirect if adding/removing a slash is appropriate. This works
