@@ -36,7 +36,7 @@ class AppendOrRemoveSlashMiddleware(object):
     
     def process_response(self, request, response):
         """If a 404 is raised within a view, try appending/removing the slash (based
-        on the `APPEND_SLASH` setting) and redirecting."""
+        on the `APPEND_SLASH` setting) and redirecting if the new url is valid."""
         
         if response.status_code == 404:
             if not request.path_info.endswith('/') and settings.APPEND_SLASH:
