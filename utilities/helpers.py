@@ -1,14 +1,13 @@
-from django.conf import settings
-from django.core.cache import cache
 import re
-from django.template.defaultfilters import slugify
 import itertools
 
+from django.template.defaultfilters import slugify
+
+# for backwards-compatibility
+from cache_utils import cached
 
 
-
-
-class Indexable(object):
+class Indexable(object):    
     def __init__(self,it):
         self.it=it
         self.already_computed=[]
@@ -25,44 +24,6 @@ class Indexable(object):
         if n > 0:
             self.already_computed.extend(itertools.islice(self.it,n))
         return self.already_computed[index]   
-
-
-
-
-
-
-    
-
-
-def cached(key, duration=None):
-    """Wraps caching around an existing function, using the given key and duration.
-    
-    Use like:
-    
-    @cached("work-for-x", 600)
-    def work():
-        # do work here
-        return result
-    
-    result = work() # result will come from cache if possible
-    """
-    key = "%s-%s" % (settings.CACHE_MIDDLEWARE_KEY_PREFIX, key)
-    if not duration:
-        duration = settings.CACHE_MIDDLEWARE_SECONDS
-    def decorator(func):
-        def inner(*args, **kwargs):
-            result = cache.get(key)
-            if not result:
-                result = func(*args, **kwargs)
-                cache.set(key, result, duration)
-            return result
-        inner.__name__ = "@cached %s" % func.__name__
-        inner.__doc__ = "@cached. %s" % func.__doc__
-        return inner
-    return decorator
-
-
-
 
 
 
@@ -112,13 +73,12 @@ def unique_slugify(instance, value, slug_field_name='slug', queryset=None,
 
 
 def _slug_strip(value, separator='-'):
-    """
-    Cleans up a slug by removing slug separator characters that occur at the
+    """Cleans up a slug by removing slug separator characters that occur at the
     beginning or end of a slug.
 
     If an alternate separator is used, it will also replace any instances of
-    the default '-' separator with the new separator.
-    """
+    the default '-' separator with the new separator."""
+    
     separator = separator or ''
     if separator == '-' or not separator:
         re_sep = '-'
@@ -135,13 +95,10 @@ def _slug_strip(value, separator='-'):
         value = re.sub(r'^%s+|%s+$' % (re_sep, re_sep), '', value)
     return value
     
-    
-
-
-
-
 
 def form_errors_as_string(form):
+    '''Render a django form's error list in plain text.'''
+    
     if form.errors:
         errors = []
         

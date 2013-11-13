@@ -5,7 +5,7 @@ from django.template import Library
 
 register = Library()
 
-@register.filter()
+@register.filter
 def obfuscate(email, linktext=None, autoescape=None):
     """
     Given a string representing an email address,
@@ -33,3 +33,13 @@ def obfuscate(email, linktext=None, autoescape=None):
         (c=c.charCodeAt(0)+13)?c:c-26);}));</script>""" % (email, linktext)
     return mark_safe(rotten_link)
 obfuscate.needs_autoescape = True
+
+
+EMAIL_RE = re.compile('[a-zA-Z0-9+_\-\.]+@[0-9a-zA-Z][.-0-9a-zA-Z]*.[a-zA-Z]+')
+
+@register.filter
+def mailto(text, autoescape=None):
+    def replace(m):
+        return obfuscate(m.group(0), autoescape=autoescape)
+    return mark_safe(EMAIL_RE.sub(replace, text))
+mailto.needs_autoescape = True

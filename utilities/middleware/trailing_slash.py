@@ -13,7 +13,9 @@ class AppendOrRemoveSlashMiddleware(object):
     Additionally, if a 404 error is raised within a view for a non-slashed url, and 
     APPEND_SLASH is True, and the slash-appended url resolves, the middleware will
     redirect. (The default APPEND_SLASH behaviour only catches Resolver404, so
-    wouldn't work in this case.)"""
+    wouldn't work in this case.)
+    
+    See gregbrown.co.nz/code/append-or-remove-slash/ for more information."""
 
     def process_request(self, request):
         """Returns a redirect if adding/removing a slash is appropriate. This works
@@ -33,9 +35,8 @@ class AppendOrRemoveSlashMiddleware(object):
                 return http.HttpResponsePermanentRedirect(generate_url(request, new_path))
     
     def process_response(self, request, response):
-        """If a 404 is raised within a view, try appending a slash and redirecting.
-        Note we can't also go back the other way, because this might cause an
-        infinite loop."""
+        """If a 404 is raised within a view, try appending/removing the slash (based
+        on the `APPEND_SLASH` setting) and redirecting if the new url is valid."""
         
         if response.status_code == 404:
             if not request.path_info.endswith('/') and settings.APPEND_SLASH:

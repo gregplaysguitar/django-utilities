@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Typography Test{% endblock %}
+{% block title %}Typography Test {% endblock %}
 
 
 {% block content %}
@@ -65,15 +65,15 @@
 
 
 {% block extra_js %}
-{{ block.super }}
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 <script type="text/javascript">
 (function($) {
     var STYLESHEETS = [
-        '{% firstof STATIC_URL MEDIA_URL %}c/style.css',
-        '{% firstof STATIC_URL MEDIA_URL %}c/site.css',
-        '{% firstof STATIC_URL MEDIA_URL %}c/fonts.css',
-        '{% firstof STATIC_URL MEDIA_URL %}c/form.css'
+        '{{ STATIC_URL }}c/style.css',
+        '{{ STATIC_URL }}c/site.css',
+        '{{ STATIC_URL }}c/fonts.css',
+        '{{ STATIC_URL }}c/form.css',
+        '{{ STATIC_URL }}c/all.css'
      ];    
     function normaliseColour(code) {
         if (code[0] === '#') {
