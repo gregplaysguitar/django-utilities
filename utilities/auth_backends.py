@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.exceptions import MultipleObjectsReturned
 
 class EmailBackend(object):
     def authenticate(self, username=None, password=None):
@@ -13,6 +14,8 @@ class EmailBackend(object):
             if user.check_password(password):
                 return user
         except User.DoesNotExist:
+            return None
+        except MultipleObjectsReturned:
             return None
 
     def get_user(self, user_id):
